@@ -42,6 +42,9 @@ How big the crop should be in regards to the width and height available to the c
 ### drawPath
 How the border of the crop should be painted. default DottedCropPathPainter.drawPath and SolidCropPathPainter.drawPath are provided, but you can create/provide any CustomPaint.
 
+### drawAgainOnTop
+There is an issue when clipping inverted on web. As workaround we can draw above the overlaycolour again. Default is false.
+
 # Controller Methods
 
 ## addTransition
