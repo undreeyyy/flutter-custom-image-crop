@@ -9,5 +9,6 @@ class NormalClipper extends CustomClipper<Path> {
   Path getClip(Size size) => _path;
 
   @override
-  bool shouldReclip(covariant NormalClipper oldClipper) => oldClipper._path != _path;
+  bool shouldReclip(covariant NormalClipper oldClipper) =>
+      oldClipper._path != _path;
 }
