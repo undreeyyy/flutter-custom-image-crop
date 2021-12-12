@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:custom_image_crop/src/clippers/normal_clipper.dart';
 import 'package:flutter/material.dart';
 import 'package:gesture_x_detector/gesture_x_detector.dart';
 import 'package:vector_math/vector_math_64.dart' as vector_math;
@@ -19,8 +20,13 @@ class CustomImageCrop extends StatefulWidget {
   final CustomCropShape shape;
   final double cropPercentage;
   final CustomPaint Function(Path) drawPath;
+  final bool drawAgainOnTop;
 
   /// A custom image cropper widget
+  ///
+  /// Note: On html rendered pages, the clipping isn't done
+  /// correctly. I've implemented a workaround, enable this
+  /// by setting drawAgainOnTop to true
   ///
   /// Uses a `CustomImageCropController` to crop the image.
   /// With the controller you can rotate, translate and/or
@@ -44,6 +50,7 @@ class CustomImageCrop extends StatefulWidget {
     this.shape = CustomCropShape.Circle,
     this.cropPercentage = 0.8,
     this.drawPath = DottedCropPathPainter.drawPath,
+    this.drawAgainOnTop = false,
     Key? key,
   }) : super(key: key);
 
@@ -109,9 +116,22 @@ class _CustomImageCropState extends State<CustomImageCrop> with CustomImageCropL
         width = constraints.maxWidth;
         height = constraints.maxHeight;
         final cropWidth = min(width, height) * widget.cropPercentage;
-        final defaultScale = min(image.width, image.height) / cropWidth;
+        var defaultScale = min(image.width, image.height) / cropWidth;
         final scale = data.scale * defaultScale;
+        final borderClip = Path()..addRect(Rect.fromLTWH(0, 0, width, height));
         path = _getPath(cropWidth, width, height);
+        final imageWidget = ClipPath(
+          clipper: NormalClipper(borderClip, width, height),
+          child: Transform(
+            transform: Matrix4.translationValues(data.x + width / 2, data.y + height / 2, 0)
+              ..scale(scale, scale, scale)
+              ..rotateZ(data.angle)
+              ..translate(-image.width / 2, -image.height / 2),
+            child: Image(
+              image: widget.image,
+            ),
+          ),
+        );
         return XGestureDetector(
           onMoveStart: onMoveStart,
           onMoveUpdate: onMoveUpdate,
@@ -123,26 +143,18 @@ class _CustomImageCropState extends State<CustomImageCrop> with CustomImageCropL
             color: widget.backgroundColor,
             child: Stack(
               children: [
-                Positioned(
-                  left: data.x + width / 2,
-                  top: data.y + height / 2,
-                  child: Transform(
-                    transform: Matrix4.diagonal3(vector_math.Vector3(scale, scale, 0))
-                      ..rotateZ(data.angle)
-                      ..translate(-image.width / 2, -image.height / 2),
-                    child: Image(
-                      image: widget.image,
-                    ),
+                imageWidget,
+                ClipPath(
+                  clipper: InvertedClipper(path, width, height),
+                  child: Container(
+                    color: widget.overlayColor,
                   ),
                 ),
-                IgnorePointer(
-                  child: ClipPath(
-                    clipper: InvertedClipper(path, width, height),
-                    child: Container(
-                      color: widget.overlayColor,
-                    ),
+                if (widget.drawAgainOnTop)
+                  ClipPath(
+                    clipper: NormalClipper(path, width, height),
+                    child: imageWidget,
                   ),
-                ),
                 widget.drawPath(path),
               ],
             ),
@@ -204,7 +216,7 @@ class _CustomImageCropState extends State<CustomImageCrop> with CustomImageCropL
     final defaultScale = min(imageAsUIImage!.width, imageAsUIImage!.height) / cropWidth;
     final scale = data.scale * defaultScale;
     final clipPath = Path.from(_getPath(cropWidth, cropWidth, cropWidth));
-    final matrix4Image = Matrix4.diagonal3(vector_math.Vector3(1, 1, 0))
+    final matrix4Image = Matrix4.diagonal3(vector_math.Vector3(1, 1, 1))
       ..translate(data.x + cropWidth / 2, data.y + cropWidth / 2)
       ..scale(scale)
       ..rotateZ(data.angle);
