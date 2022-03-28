@@ -219,7 +219,6 @@ class _CustomImageCropState extends State<CustomImageCrop>
               height: height * widget.cropPercentage,
             ),
           );
-
       default:
         return Path()
           ..addRect(
@@ -300,4 +299,8 @@ class _CustomImageCropState extends State<CustomImageCrop>
   }
 }
 
-enum CustomCropShape { Circle, Square, CustomFromScale }
+enum CustomCropShape {
+  Circle,
+  Square,
+  CustomFromScale,
+}
