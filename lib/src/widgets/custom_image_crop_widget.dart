@@ -135,8 +135,10 @@ class _CustomImageCropState extends State<CustomImageCrop>
         final aspectRationContainer =
             constraints.maxHeight / constraints.maxWidth;
         final aspectRationImage = image.height / image.width;
-        double imageWidth = image.width.toDouble();
-        double imageHeight = image.height.toDouble();
+        double imageWidth =
+            min(image.width.toDouble(), image.height.toDouble());
+        double imageHeight =
+            max(image.width.toDouble(), image.height.toDouble());
         if (aspectRationContainer != aspectRationImage) {
           imageWidth = constraints.maxWidth;
           imageHeight = constraints.maxHeight;
