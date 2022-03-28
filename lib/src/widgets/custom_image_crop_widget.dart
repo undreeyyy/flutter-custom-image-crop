@@ -208,7 +208,7 @@ class _CustomImageCropState extends State<CustomImageCrop>
           ..addOval(
             Rect.fromCircle(
               center: Offset(width / 2, height / 2),
-              radius: cropWidth / 2,
+              radius: (width * widget.cropPercentage) / 2,
             ),
           );
       case CustomCropShape.CustomFromCropPercentage:
@@ -226,8 +226,8 @@ class _CustomImageCropState extends State<CustomImageCrop>
           ..addRect(
             Rect.fromCenter(
               center: Offset(width / 2, height / 2),
-              width: cropWidth,
-              height: cropWidth,
+              width: width * widget.cropPercentage,
+              height: width * widget.cropPercentage,
             ),
           );
     }
