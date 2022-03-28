@@ -217,7 +217,7 @@ class _CustomImageCropState extends State<CustomImageCrop>
             Rect.fromCenter(
               center: Offset(width / 2, height / 2),
               width: cropWidth,
-              height: cropWidth * (2 / 3),
+              height: cropWidth / (2 / 3),
             ),
           );
       case CustomCropShape.AspectRatio_4_3:
@@ -226,7 +226,7 @@ class _CustomImageCropState extends State<CustomImageCrop>
             Rect.fromCenter(
               center: Offset(width / 2, height / 2),
               width: cropWidth,
-              height: cropWidth * (4 / 3),
+              height: cropWidth / (4 / 3),
             ),
           );
       default:
