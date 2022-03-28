@@ -141,6 +141,8 @@ class _CustomImageCropState extends State<CustomImageCrop>
           imageWidth = constraints.maxWidth;
           imageHeight = constraints.maxHeight;
         }
+        _width = constraints.maxWidth;
+        _height = constraints.maxHeight;
 
         final cropWidth = min(_width, _height) * widget.cropPercentage;
         final defaultScale = cropWidth / max(imageWidth, imageHeight);
