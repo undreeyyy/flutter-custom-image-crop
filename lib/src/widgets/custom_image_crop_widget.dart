@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:custom_image_crop/src/clippers/inverted_clipper.dart';
+import 'package:custom_image_crop/src/controllers/controller.dart';
+import 'package:custom_image_crop/src/models/model.dart';
+import 'package:custom_image_crop/src/painters/dotted_path_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:gesture_x_detector/gesture_x_detector.dart';
 import 'package:vector_math/vector_math_64.dart' as vector_math;
-
-import 'package:custom_image_crop/src/controllers/controller.dart';
-import 'package:custom_image_crop/src/painters/dotted_path_painter.dart';
-import 'package:custom_image_crop/src/clippers/inverted_clipper.dart';
-import 'package:custom_image_crop/src/models/model.dart';
 
 /// An image cropper that is customizable.
 /// You can rotate, scale and translate either
@@ -135,7 +134,8 @@ class _CustomImageCropState extends State<CustomImageCrop>
       builder: (context, constraints) {
         _width = constraints.maxWidth;
         _height = constraints.maxHeight;
-        final cropWidth = min(_width, _height) * widget.cropPercentage;
+        final cropWidth =
+            min(_width, _height) * (1 + (1 - widget.cropPercentage));
         final defaultScale = cropWidth / max(image.width, image.height);
         final scale = data.scale * defaultScale;
         _path = _getPath(cropWidth, _width, _height);
@@ -209,6 +209,24 @@ class _CustomImageCropState extends State<CustomImageCrop>
             Rect.fromCircle(
               center: Offset(width / 2, height / 2),
               radius: cropWidth / 2,
+            ),
+          );
+      case CustomCropShape.AspectRatio_2_3:
+        return Path()
+          ..addRect(
+            Rect.fromCenter(
+              center: Offset(width / 2, height / 2),
+              width: cropWidth,
+              height: cropWidth * (2 / 3),
+            ),
+          );
+      case CustomCropShape.AspectRatio_4_3:
+        return Path()
+          ..addRect(
+            Rect.fromCenter(
+              center: Offset(width / 2, height / 2),
+              width: cropWidth,
+              height: cropWidth * (4 / 3),
             ),
           );
       default:
@@ -291,7 +309,4 @@ class _CustomImageCropState extends State<CustomImageCrop>
   }
 }
 
-enum CustomCropShape {
-  Circle,
-  Square,
-}
+enum CustomCropShape { Circle, Square, AspectRatio_2_3, AspectRatio_4_3 }
