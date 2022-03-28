@@ -138,7 +138,7 @@ class _CustomImageCropState extends State<CustomImageCrop>
             min(_width, _height) * (1 + (1 - widget.cropPercentage));
         final defaultScale = cropWidth / max(image.width, image.height);
         final scale = data.scale * defaultScale;
-        _path = _getPath(cropWidth, _width, _height);
+        _path = _getPath(_width, _height);
         return XGestureDetector(
           onMoveStart: onMoveStart,
           onMoveUpdate: onMoveUpdate,
@@ -201,7 +201,7 @@ class _CustomImageCropState extends State<CustomImageCrop>
     addTransition(CropImageData(x: event.delta.dx, y: event.delta.dy));
   }
 
-  Path _getPath(double cropWidth, double width, double height) {
+  Path _getPath(double width, double height) {
     switch (widget.shape) {
       case CustomCropShape.Circle:
         return Path()
@@ -242,11 +242,12 @@ class _CustomImageCropState extends State<CustomImageCrop>
     final imageHeight = _imageAsUIImage!.height;
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
-    final uiWidth = min(_width, _height) * widget.cropPercentage;
+    final uiWidth = min(_width, _height) * (1 + (1 - widget.cropPercentage));
     final cropWidth = max(imageWidth, imageHeight).toDouble();
     final translateScale = cropWidth / uiWidth;
     final scale = data.scale;
-    final clipPath = Path.from(_getPath(cropWidth, cropWidth, cropWidth));
+    final clipPath =
+        Path.from(_getPath(imageWidth.toDouble(), imageHeight.toDouble()));
     final matrix4Image = Matrix4.diagonal3(vector_math.Vector3.all(1))
       ..translate(translateScale * data.x + cropWidth / 2,
           translateScale * data.y + cropWidth / 2)
