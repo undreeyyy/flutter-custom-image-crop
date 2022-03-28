@@ -134,11 +134,10 @@ class _CustomImageCropState extends State<CustomImageCrop>
       builder: (context, constraints) {
         _width = constraints.maxWidth;
         _height = constraints.maxHeight;
-        final cropWidth =
-            min(_width, _height) * (1 + (1 - widget.cropPercentage));
+        final cropWidth = min(_width, _height) * widget.cropPercentage;
         final defaultScale = cropWidth / max(image.width, image.height);
         final scale = data.scale * defaultScale;
-        _path = _getPath(_width, _height);
+        _path = _getPath(cropWidth, _width, _height);
         return XGestureDetector(
           onMoveStart: onMoveStart,
           onMoveUpdate: onMoveUpdate,
@@ -201,23 +200,23 @@ class _CustomImageCropState extends State<CustomImageCrop>
     addTransition(CropImageData(x: event.delta.dx, y: event.delta.dy));
   }
 
-  Path _getPath(double width, double height) {
+  Path _getPath(double cropWidth, double width, double height) {
     switch (widget.shape) {
       case CustomCropShape.Circle:
         return Path()
           ..addOval(
             Rect.fromCircle(
               center: Offset(width / 2, height / 2),
-              radius: (width * widget.cropPercentage) / 2,
+              radius: cropWidth / 2,
             ),
           );
-      case CustomCropShape.CustomFromCropPercentage:
+      case CustomCropShape.CustomFromScale:
         return Path()
           ..addRect(
             Rect.fromCenter(
               center: Offset(width / 2, height / 2),
-              width: width * widget.cropPercentage,
-              height: height * widget.cropPercentage,
+              width: ((width / 2) * .9) * 2,
+              height: ((width / 2) * .9) * 2,
             ),
           );
 
@@ -226,8 +225,8 @@ class _CustomImageCropState extends State<CustomImageCrop>
           ..addRect(
             Rect.fromCenter(
               center: Offset(width / 2, height / 2),
-              width: width * widget.cropPercentage,
-              height: width * widget.cropPercentage,
+              width: cropWidth,
+              height: cropWidth,
             ),
           );
     }
@@ -242,12 +241,11 @@ class _CustomImageCropState extends State<CustomImageCrop>
     final imageHeight = _imageAsUIImage!.height;
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
-    final uiWidth = min(_width, _height) * (1 + (1 - widget.cropPercentage));
+    final uiWidth = min(_width, _height) * widget.cropPercentage;
     final cropWidth = max(imageWidth, imageHeight).toDouble();
     final translateScale = cropWidth / uiWidth;
     final scale = data.scale;
-    final clipPath =
-        Path.from(_getPath(imageWidth.toDouble(), imageHeight.toDouble()));
+    final clipPath = Path.from(_getPath(cropWidth, cropWidth, cropWidth));
     final matrix4Image = Matrix4.diagonal3(vector_math.Vector3.all(1))
       ..translate(translateScale * data.x + cropWidth / 2,
           translateScale * data.y + cropWidth / 2)
@@ -302,4 +300,4 @@ class _CustomImageCropState extends State<CustomImageCrop>
   }
 }
 
-enum CustomCropShape { Circle, Square, CustomFromCropPercentage }
+enum CustomCropShape { Circle, Square, CustomFromScale }
