@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:custom_image_crop/src/clippers/inverted_clipper.dart';
+import 'package:custom_image_crop/src/controllers/controller.dart';
+import 'package:custom_image_crop/src/models/model.dart';
+import 'package:custom_image_crop/src/painters/dotted_path_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:gesture_x_detector/gesture_x_detector.dart';
 import 'package:vector_math/vector_math_64.dart' as vector_math;
-
-import 'package:custom_image_crop/src/controllers/controller.dart';
-import 'package:custom_image_crop/src/painters/dotted_path_painter.dart';
-import 'package:custom_image_crop/src/clippers/inverted_clipper.dart';
-import 'package:custom_image_crop/src/models/model.dart';
 
 /// An image cropper that is customizable.
 /// You can rotate, scale and translate either
@@ -211,6 +210,16 @@ class _CustomImageCropState extends State<CustomImageCrop>
               radius: cropWidth / 2,
             ),
           );
+      case CustomCropShape.CustomFromScale:
+        return Path()
+          ..addRect(
+            Rect.fromCenter(
+              center: Offset(width / 2, height / 2),
+              width: width * widget.cropPercentage,
+              height: height * widget.cropPercentage,
+            ),
+          );
+
       default:
         return Path()
           ..addRect(
@@ -291,7 +300,4 @@ class _CustomImageCropState extends State<CustomImageCrop>
   }
 }
 
-enum CustomCropShape {
-  Circle,
-  Square,
-}
+enum CustomCropShape { Circle, Square, CustomFromScale }
