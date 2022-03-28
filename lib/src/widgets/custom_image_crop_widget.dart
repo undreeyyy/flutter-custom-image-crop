@@ -211,13 +211,13 @@ class _CustomImageCropState extends State<CustomImageCrop>
               radius: cropWidth / 2,
             ),
           );
-      case CustomCropShape.CustomFromScale:
+      case CustomCropShape.CustomFromCropPercentage:
         return Path()
           ..addRect(
             Rect.fromCenter(
               center: Offset(width / 2, height / 2),
-              width: width * data.scale,
-              height: height * data.scale,
+              width: width * widget.cropPercentage,
+              height: height * widget.cropPercentage,
             ),
           );
 
@@ -301,4 +301,4 @@ class _CustomImageCropState extends State<CustomImageCrop>
   }
 }
 
-enum CustomCropShape { Circle, Square, CustomFromScale }
+enum CustomCropShape { Circle, Square, CustomFromCropPercentage }
