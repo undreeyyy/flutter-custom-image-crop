@@ -132,10 +132,18 @@ class _CustomImageCropState extends State<CustomImageCrop>
     }
     return LayoutBuilder(
       builder: (context, constraints) {
-        _width = constraints.maxWidth;
-        _height = constraints.maxHeight;
+        final aspectRationContainer =
+            constraints.maxHeight / constraints.maxWidth;
+        final aspectRationImage = image.height / image.width;
+        double imageWidth = image.width.toDouble();
+        double imageHeight = image.height.toDouble();
+        if (aspectRationContainer != aspectRationImage) {
+          imageWidth = constraints.maxWidth;
+          imageHeight = constraints.maxHeight;
+        }
+
         final cropWidth = min(_width, _height) * widget.cropPercentage;
-        final defaultScale = cropWidth / max(image.width, image.height);
+        final defaultScale = cropWidth / max(imageWidth, imageHeight);
         final scale = data.scale * defaultScale;
         _path = _getPath(cropWidth, _width, _height);
         return XGestureDetector(
@@ -150,8 +158,8 @@ class _CustomImageCropState extends State<CustomImageCrop>
             child: Stack(
               children: [
                 Positioned(
-                  left: data.x + _width / 2,
-                  top: data.y + _height / 2,
+                  left: data.x + imageWidth / 2,
+                  top: data.y + imageHeight / 2,
                   child: Transform(
                     transform: Matrix4.diagonal3(
                         vector_math.Vector3(scale, scale, scale))
