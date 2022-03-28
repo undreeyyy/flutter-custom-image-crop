@@ -211,24 +211,16 @@ class _CustomImageCropState extends State<CustomImageCrop>
               radius: cropWidth / 2,
             ),
           );
-      case CustomCropShape.AspectRatio_2_3:
+      case CustomCropShape.CustomFromScale:
         return Path()
           ..addRect(
             Rect.fromCenter(
               center: Offset(width / 2, height / 2),
-              width: cropWidth,
-              height: cropWidth / (2 / 3),
+              width: width * data.scale,
+              height: height * data.scale,
             ),
           );
-      case CustomCropShape.AspectRatio_4_3:
-        return Path()
-          ..addRect(
-            Rect.fromCenter(
-              center: Offset(width / 2, height / 2),
-              width: cropWidth,
-              height: cropWidth / (4 / 3),
-            ),
-          );
+
       default:
         return Path()
           ..addRect(
@@ -309,4 +301,4 @@ class _CustomImageCropState extends State<CustomImageCrop>
   }
 }
 
-enum CustomCropShape { Circle, Square, AspectRatio_2_3, AspectRatio_4_3 }
+enum CustomCropShape { Circle, Square, CustomFromScale }
