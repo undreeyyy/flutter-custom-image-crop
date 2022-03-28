@@ -215,8 +215,8 @@ class _CustomImageCropState extends State<CustomImageCrop>
           ..addRect(
             Rect.fromCenter(
               center: Offset(width / 2, height / 2),
-              width: ((width / 2) * .9) * 2,
-              height: ((width / 2) * .9) * 2,
+              width: width * widget.cropPercentage,
+              height: height * widget.cropPercentage,
             ),
           );
 
